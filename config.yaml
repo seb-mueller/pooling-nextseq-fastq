@@ -1,0 +1,7 @@
+OUTDIR: 
+  fastq_pooled
+NEXTSEQDIR: 
+  mynextseqdir
+SAMPLES:
+  sample1:
+  sample2:
