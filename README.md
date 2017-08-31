@@ -1,6 +1,67 @@
 # pooling-nextseq-fastq
 Pooling Illumina NextSeq 500 fastq files using a Snakemake directive
 
+## Requirement
+* Unix (only tested on Linux)
+* [Snakemake](https://snakemake.readthedocs.io/en/stable/)
+* Python3 (optional)
+* [basemount](https://help.basespace.illumina.com/articles/descriptive/introduction-to-basemount) (optional)
+
+## Usage
+Download or clone this repository in your standard software directory (doesn't need to be where the actual data is).
+
+```bash
+cd ~/software
+git clone https://github.com/seb-mueller/pooling-nextseq-fastq.git
+```
+Navigate or Create your project folder where you want to pooled data to be created.
+
+```bash
+cd ~/analysis
+mkdir mynextseqproject
+cd mynextseqproject
+```
+Create a config.yaml file. 
+This can be done manual using a text editor. An example config.yaml is included in this repo.
+Basically, base directory of where the basemount copied data is sitting needs to be specified as well
+as each sample! 
+Note: Having to list all samples is a deliberate choice for reproducibility etc. reasons and the config.yaml should be thought of a companion to this project.
+
+The generation can also be automized using the generate_config.py script. 
+In this example we are using moch data shipped with this repo:
+
+```bash
+python3 ~/software/pooling-nextseq-fastq/generate_config.py --dir ~/software/pooling-nextseq-fastq/mynextseqdir
+```
+
+This should generate a config.yaml with the following contend:
+
+    NEXTSEQDIR: /home/sm934/software/pooling-nextseq-fastq/mynextseqdir
+    OUTDIR: fastq_pooled
+    SAMPLES:
+      sample1: null
+      sample2: null
+
+```bash
+snakemake -s ~/software/pooling-nextseq-fastq/Snakefile
+```
+
+Which should generate the following files:
+
+    ├── config.yaml
+    ├── fastq_pooled
+    │   ├── sample1_R1.fastq.gz
+    │   ├── sample1_R2.fastq.gz
+    │   ├── sample2_R1.fastq.gz
+    │   └── sample2_R2.fastq.gz
+    └── logs
+        └── pooling_fastq
+            ├── sample1.log
+            └── sample2.log
+
+
+
+## Purpose of this script
 This is meant to be an automated pipiline to merge fastq files form the NextSeq 500 machine which we 
 are increasingly use. 
 Due to the availability of BaseSpace Linux command line interface (CLI) called [basemount](https://help.basespace.illumina.com/articles/descriptive/introduction-to-basemount), it is possible to automate the download
