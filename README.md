@@ -1,10 +1,10 @@
-# pooling-nextseq-fastq
+# Pooling NextSeq fastq files
 Pooling Illumina NextSeq 500 fastq files using a Snakemake directive
 
 ## Requirement
 * Unix (only tested on Linux)
 * [Snakemake](https://snakemake.readthedocs.io/en/stable/)
-* Python3 (optional)
+* Python 3.5+ (optional)
 * [basemount](https://help.basespace.illumina.com/articles/descriptive/introduction-to-basemount) (optional)
 
 ## Usage
@@ -14,7 +14,7 @@ Download or clone this repository in your standard software directory (doesn't n
 cd ~/software
 git clone https://github.com/seb-mueller/pooling-nextseq-fastq.git
 ```
-Navigate or Create your project folder where you want to pooled data to be created.
+Navigate or Create your project folder where you want the pooled data to be created.
 
 ```bash
 cd ~/analysis
@@ -22,9 +22,8 @@ mkdir mynextseqproject
 cd mynextseqproject
 ```
 Create a config.yaml file. 
-This can be done manual using a text editor. An example config.yaml is included in this repo.
-Basically, base directory of where the basemount copied data is sitting needs to be specified as well
-as each sample! 
+This can be done manual using a text editor (an example config.yaml is included in this repo or see the content below): 
+Each entry underneath the "SAMPLES:" line corresponds to a folder in the Samples directory of the basemount copied data (here the samples are sample1 and sample2, as can be seen in the tree at the bottom in this document).
 Note: Having to list all samples is a deliberate choice for reproducibility etc. reasons and the config.yaml should be thought of a companion to this project.
 
 The generation can also be automized using the generate_config.py script. 
@@ -34,7 +33,7 @@ In this example we are using moch data shipped with this repo:
 python3 ~/software/pooling-nextseq-fastq/generate_config.py --dir ~/software/pooling-nextseq-fastq/mynextseqdir
 ```
 
-This should generate a config.yaml with the following contend:
+This should generate a config.yaml with the following content:
 
     NEXTSEQDIR: /home/sm934/software/pooling-nextseq-fastq/mynextseqdir
     OUTDIR: fastq_pooled
@@ -45,6 +44,8 @@ This should generate a config.yaml with the following contend:
 ```bash
 snakemake -s ~/software/pooling-nextseq-fastq/Snakefile
 ```
+Note, snakemake expects the "Snakefile" in the directory it is run from, but since we don't need it in every project since all the project information are in the "config.yaml". 
+So we just point it to the common Snakefile shipped with this repo using the -s flag.
 
 Which should generate the following files:
 
@@ -119,3 +120,18 @@ Annoyingly, the data is split up into 4 lanes due to the nature of the machine. 
             └── Properties
                 ├── Input.Runs
                 └── PerLaneAttributes.LaneNumbers
+
+## General information
+
+* This script is unzipping the raw files, concatenates them and gzip them again as opposed to just concatenating them, here is a discussion why: https://www.biostars.org/p/81924/.
+
+* The actual processing is done with a bash script sitting in the script folder, this is planed to be ported to python at some point.
+
+## Pooling fastq files without Snakemake or without the basemount directory structure
+
+If you don't have Snakemake you can just run the another script shipped in this repo (scripts/pooling_nextseq500_multisample.sh) (but would loose all the perks coming with Snakemake obviously):
+
+```bash
+bash pooling_nextseq500_multisample.sh dir_raw_data dir_local
+```
+This script still assumes the Basespace data structure, but should be easily adaptable. Please get in touch if this should be made more generic.
