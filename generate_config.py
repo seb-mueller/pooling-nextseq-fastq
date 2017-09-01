@@ -8,7 +8,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--dir", help="NextSeq root Directory", required=True)
 args = parser.parse_args()
 mydir = args.dir
-sampleDirs = os.listdir(mydir + "/Samples")
+sampleAll = os.listdir(mydir + "/Samples")
+sampleAll = mydir + "/Samples"
+
+sampleDirs = [f.name for f in os.scandir(sampleAll) if not f.name.startswith('.') and f.is_dir() ]
+
 # in order to write a yaml file, the list containing the sample dirs
 # have to be converted into a dict for yaml.dump to do the right thing
 # check first if file exists and prompt a warning
